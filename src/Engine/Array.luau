@@ -1,6 +1,5 @@
 --!optimize 2
 --!native
-local ServerScriptService = game:GetService("ServerScriptService")
 local Parser = require("../Core/Parser")
 local Types = require("../Core/Types")
 
