@@ -4,12 +4,8 @@
 local Parser = {}
 local Types = require("./Types")
 
-local MATCH = string.match
-local TONUMBER = tonumber
-local TYPEOF = typeof
-
 function Parser.GetPredicate(request: Types.GenericPredicate): Types.GenericPredicate?
-	local requestType = TYPEOF(request)
+	local requestType = typeof(request)
 	if requestType == "function" then
 		return request
 	elseif requestType ~= "string" then
@@ -17,9 +13,9 @@ function Parser.GetPredicate(request: Types.GenericPredicate): Types.GenericPred
 	end
 
 	-- Checks if it is a valid string query comparison
-	local key, operator, value = MATCH(request :: string, "^%s*(%w-)%s*([><=~]=?)%s*(%w+)%s*$")
+	local key, operator, value = string.match(request :: string, "^%s*(%w-)%s*([><=~]=?)%s*(%w+)%s*$")
 	if key and operator ~= "=" then
-		local finalValue = TONUMBER(value) or value
+		local finalValue = tonumber(value) or value
 		local keyIsEmpty = key == ""
 		
 		if operator == ">" then
