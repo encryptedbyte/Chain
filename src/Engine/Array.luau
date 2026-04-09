@@ -3,36 +3,26 @@
 local Parser = require("../Core/Parser")
 local Types = require("../Core/Types")
 
--- Localizing globals
-local setmetatable = setmetatable
-local inf = math.huge
-
-local TABLE_INSERT = table.insert
-local TABLE_CLEAR = table.clear
-
-local RandomUp = Random
-local RandomDefault = RandomUp.new()
-
 local Chain = {}
 Chain.__index = Chain
 Chain.__chain_array = true
 
 function Chain.new<T>(collection: {T}?) : Types.Array<T>
-	return setmetatable({
-		_collection = collection or {},
-		_pipeline = {},
-	}, Chain)
+	local self = setmetatable({}, Chain)
+	self._collection = collection or {}
+	self._pipeline = {}
+	return self
 end
 
 function Chain.Filter<T>(self: Types.Array<T>, query: Types.Comparison<T>)
 	local predicate = Parser.GetPredicateOrThrow(query, 3)
-	TABLE_INSERT(self._pipeline, {predicate, "filter"})
+	table.insert(self._pipeline, {predicate, "filter"})
 	return self
 end
 
 function Chain.Map<T, U>(self: Types.Array<T>, query: Types.Selection<T, U>)
 	local predicate = Parser.GetPredicateOrThrow(query, 3)
-	TABLE_INSERT(self._pipeline, {predicate, "map"})
+	table.insert(self._pipeline, {predicate, "map"})
 	return self
 end
 
@@ -85,7 +75,7 @@ function Chain.First<T>(self: Types.Array<T>, query: Types.Comparison<T>?)
     which can be 96% slower. Technically, it is still eager/terminal.
     ]]--
 	if #pipeline > 0 then
-		TABLE_INSERT(self._pipeline, {
+		table.insert(self._pipeline, {
 			predicate or function() return true end, 
 			"first"
 		})
@@ -148,7 +138,7 @@ function Chain.Unique<T, U>(self: Types.Array<T>, query: Types.Selection<T, U>?)
 		return item
 	end
 
-	TABLE_INSERT(self._pipeline, {predicate, "unique", {}})
+	table.insert(self._pipeline, {predicate, "unique", {}})
 	return self
 end
 
@@ -157,7 +147,7 @@ function Chain.Shuffle<T>(self: Types.Array<T>, seed: number?)
 		error("Seed should be nil or a number!", 2)
 	end
 
-	local randomLib = seed and RandomUp.new(seed) or RandomDefault
+	local randomLib = Random.new(seed)
 	randomLib:Shuffle(self:_Execute())
 
 	return self
@@ -181,7 +171,7 @@ function Chain.Take<T>(self: Types.Array<T>, amount: number)
 		error("Invalid parameter amount. Positive number expected", 2)
 	end
 
-	TABLE_INSERT(self._pipeline, {amount, "take", 0})
+	table.insert(self._pipeline, {amount, "take", 0})
 	return self
 end
 
@@ -190,7 +180,7 @@ function Chain.Skip<T>(self: Types.Array<T>, amount: number)
 		error("Invalid parameter amount. Positive number expected", 2)
 	end
 	
-	TABLE_INSERT(self._pipeline, {amount, "skip", 0})
+	table.insert(self._pipeline, {amount, "skip", 0})
 	return self
 end
 
@@ -231,7 +221,7 @@ function Chain.Min<T>(self: Types.Array<T>, query: Types.Selection<T, number>?)
 	local predicate = Parser.GetPredicate(query) or function(x) return x end
 	local collection = self:_Execute()
 	
-	local minimum = inf
+	local minimum = math.huge
 	local result = nil
 	for i = 1, #collection do
 		local item = collection[i]
@@ -249,7 +239,7 @@ function Chain.Max<T>(self: Types.Array<T>, query: Types.Selection<T, number>?)
 	local predicate = Parser.GetPredicate(query) or function(item) return item end
 	local collection = self:_Execute()
 
-	local maximum = -inf
+	local maximum = -math.huge
 	local result = nil
 	for i = 1, #collection do
 		local item = collection[i]
@@ -645,7 +635,7 @@ function Chain._Execute<T>(self: Types.Array<T>): {T} | T?
 	local totalTasks = #pipeline
 
 	if totalTasks == 0 or collectionSize == 0 then
-		TABLE_CLEAR(pipeline)
+		table.clear(pipeline)
 		return collection
 	end
 	
@@ -658,7 +648,7 @@ function Chain._Execute<T>(self: Types.Array<T>): {T} | T?
 	-- Tries to compile the pipeline. Can be significantly faster!
 	if self:_Compile(pipeline, collection, result) then
 		self._collection = result
-		TABLE_CLEAR(pipeline)
+		table.clear(pipeline)
 		return result
 	end
 
@@ -718,7 +708,7 @@ function Chain._Execute<T>(self: Types.Array<T>): {T} | T?
 	end
 
 	-- Clear the pipeline pending tasks
-	TABLE_CLEAR(pipeline)
+	table.clear(pipeline)
 
 	-- Handle terminal operations
 	if isFirstTerminal then 
