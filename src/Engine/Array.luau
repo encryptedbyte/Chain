@@ -1,9 +1,8 @@
 --!optimize 2
 --!native
 local ServerScriptService = game:GetService("ServerScriptService")
-local Core = script.Parent.Parent:WaitForChild("Core")
-local Parser = require(Core.Parser)
-local Types = require(Core.Types)
+local Parser = require("../Core/Parser")
+local Types = require("../Core/Types")
 
 -- Localizing globals
 local setmetatable = setmetatable

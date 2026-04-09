@@ -1,10 +1,7 @@
 --!optimize 2
 --!native
-local Core = script.Parent.Parent:WaitForChild("Core")
-local Parser = require(Core.Parser)
-local Types = require(Core.Types)
-
-local ArrayChain = script.Parent.Array
+local Parser = require("../Core/Types")
+local Types = require("../Core/Types")
 
 local setmetatable = setmetatable
 local inf = math.huge
@@ -71,7 +68,7 @@ function Chain.Flatten<K, V, U>(self: Types.Dictionary<K, V>, query: Types.KeyVa
 		end
 	end
 
-	return require(ArrayChain).new(result)
+	return require("./Array").new(result)
 end
 
 function Chain.ForEach<K, V>(self: Types.Dictionary<K, V>, query: Types.KeyValueSelection<K, V, any>)

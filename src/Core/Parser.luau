@@ -2,7 +2,7 @@
 --!native
 --!optimize 2
 local Parser = {}
-local Types = require(script.Parent.Types)
+local Types = require("./Types")
 
 local MATCH = string.match
 local TONUMBER = tonumber

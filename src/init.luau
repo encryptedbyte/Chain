@@ -1,13 +1,13 @@
 --!strict
 --!optimize 2
 --!native
-local Types = require(script.Core.Types)
-
 local Chain = {}
 
-local Array = require(script.Engine.Array)
-local Dictionary = require(script.Engine.Dictionary)
-local DeepCopy = require(script.Util.DeepCopy)
+local Types = require("@self/Core/Types")
+local DeepCopy = require("@self/Util/DeepCopy")
+
+local Array = require("@self/Engine/Array")
+local Dictionary = require("@self/Engine/Dictionary")
 
 local TYPEOF = typeof
 local GETMETATABLE = getmetatable
