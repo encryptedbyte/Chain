@@ -256,48 +256,6 @@ end
 		It may reorder or adjust internal tasks to improve performance, 
 		but if any optimization would alter the outcome, it should not be applied.
 ]]--
-function Chain._OptimizePipeline2<T>(self: any, pipeline: {any}): number
-	local i = 1
-	while i <= #pipeline do
-		local current = pipeline[i]
-		local taskName = current[2]
-		local value = current[1] :: number
-
-		-- Attempt to pull 'take' and 'skip' towards the start of the pipeline
-		if taskName == "take" or taskName == "skip" then
-			local prevIndex = i - 1
-
-			if prevIndex >= 1 then
-				local prev = pipeline[prevIndex]
-				local prevName = prev[2]
-
-				-- Rule: Swap with 'map' (Commutative optimization)
-				if prevName == "map" then
-					pipeline[prevIndex], pipeline[i] = pipeline[i], pipeline[prevIndex]
-					i = i - 1 -- Step back to try bubbling the task further up
-					continue
-
-					-- Rule: Merge consecutive 'take' tasks
-				elseif prevName == "take" and taskName == "take" then
-					prev[1] = math.min(prev[1], value)
-					table.remove(pipeline, i)
-					continue
-
-					-- Rule: Merge consecutive 'skip' tasks
-				elseif prevName == "skip" and taskName == "skip" then
-					prev[1] = prev[1] + value
-					table.remove(pipeline, i)
-					continue
-				end
-			end
-		end
-
-		i = i + 1
-	end
-
-	return #pipeline
-end
-
 function Chain._OptimizePipeline<T>(self: any, pipeline: {any}): number
 	local size = #pipeline
 	local writeIndex = 1
