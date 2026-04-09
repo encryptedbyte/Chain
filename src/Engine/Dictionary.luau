@@ -3,18 +3,15 @@
 local Parser = require("../Core/Types")
 local Types = require("../Core/Types")
 
-local setmetatable = setmetatable
-local inf = math.huge
-
 local Chain = {}
 Chain.__index = Chain
 Chain.__chain_dict = true
 
 function Chain.new<K, V>(collection: {[K]: V}?) : Types.Dictionary<K, V>
-	return setmetatable({
-		_collection = collection or {},
-		_pipeline = {},
-	}, Chain)
+	local self = setmetatable({}, Chain)
+	self._collection = collection or {}
+	self._pipeline = {}
+	return self
 end
 
 function Chain.Filter<K, V>(self: Types.Dictionary<K, V>, query: Types.KeyValueComparison<K, V>)
@@ -185,7 +182,7 @@ end
 function Chain.Min<K, V>(self: Types.Dictionary<K, V>, query: Types.KeyValueSelection<K, V, number>)
 	local predicate = Parser.GetPredicateOrThrow(query)
 
-	local minimum = inf
+	local minimum = math.huge
 	local resultKey, resultValue = nil, nil
 
 	for key, value in pairs(self:_Execute()) do
@@ -203,7 +200,7 @@ function Chain.Max<K, V>(self: Types.Dictionary<K, V>, query: Types.KeyValueSele
 	local predicate = Parser.GetPredicateOrThrow(query)
 	local collection = self:_Execute()
 
-	local maximum = -inf
+	local maximum = -math.huge
 	local resultKey, resultValue = nil, nil
 
 	for key, value in pairs(self:_Execute()) do
