@@ -1,13 +1,11 @@
 --!native
 --!optimize 2
-local DeepCopy = {}
-
 local _setmetatable = setmetatable
 local _getmetatable = getmetatable
 local _type = type
 local _CREATE_TABLE = table.create
 
-local function RecursiveCopy<T>(tbl: T): T
+local function RecursiveCopy<T>(tbl: {T}): {T}
 	if _type(tbl) ~= "table" then
 		return tbl
 	end
