@@ -9,11 +9,6 @@ local DeepCopy = require("@self/Util/DeepCopy")
 local Array = require("@self/Engine/Array")
 local Dictionary = require("@self/Engine/Dictionary")
 
-local TYPEOF = typeof
-local GETMETATABLE = getmetatable
-
-local TABLE_CREATE = table.create
-
 -- Alias to Chain.Array()
 function Chain.new<T>(collection: {T}?) : Types.Array<T>
 	return Chain.Array(collection)
@@ -49,11 +44,11 @@ end
 
 -- Creates a numerical Chain object from start to end
 function Chain.Range(startAt: number, endAt: number, stepIter: number?): Types.Array<number>
-	if TYPEOF(startAt) ~= "number" or TYPEOF(endAt) ~= "number" then
+	if typeof(startAt) ~= "number" or typeof(endAt) ~= "number" then
 		error("Expected numbers as parameters!", 2)
 	end
 	
-	if TYPEOF(stepIter) ~= "number" and TYPEOF(stepIter) ~= "nil" then
+	if typeof(stepIter) ~= "number" and typeof(stepIter) ~= "nil" then
 		error("Expected number or nil as the \"step\" parameter!", 2)
 	end
 	
@@ -61,7 +56,7 @@ function Chain.Range(startAt: number, endAt: number, stepIter: number?): Types.A
 	local step = (startAt <= endAt) and stepBase or -stepBase
 
 	local size = math.floor((endAt - startAt) / step + 1)
-	local collection = TABLE_CREATE(size) :: {number}
+	local collection = table.create(size) :: {number}
 	
 	local index = 1
 	for i = startAt, endAt, step do
@@ -75,11 +70,11 @@ end
 -- Creates a new Chain Array object and fill it with the given value.
 -- If the value is a table, it will use shallow copies to fill the array. (table.clone)
 function Chain.Fill<T>(value: T, size: number): Types.Array<T>
-	local isTable = TYPEOF(value) == "table"
+	local isTable = typeof(value) == "table"
 	local collection: {T} = (
 		isTable
-		and TABLE_CREATE(size) 
-		or TABLE_CREATE(size, value)
+		and table.create(size) 
+		or table.create(size, value)
 	)
 
 	if isTable then
@@ -106,11 +101,11 @@ function Chain.Concat(...: Types.ArrayParams): Types.Array<unknown>
 
 	-- Pre-allocate the table
 	for _, item in ipairs(args) do
-		if TYPEOF(item) ~= "table" then
+		if typeof(item) ~= "table" then
 			error("Parameters must be only tables.")
 		end
 
-		local metatable = GETMETATABLE(item)
+		local metatable = getmetatable(item)
 		local isChain = metatable and metatable.__chain_array
 		if isChain then
 			chainObjects[item] = item:_Execute()
@@ -120,7 +115,7 @@ function Chain.Concat(...: Types.ArrayParams): Types.Array<unknown>
 	end
 
 	-- Fill the table
-	local finalTable = TABLE_CREATE(allocationSize) :: {unknown}
+	local finalTable = table.create(allocationSize) :: {unknown}
 	for _, item in ipairs(args) do
 		local collection = chainObjects[item] or item
 		table.move(collection, 1, #collection, #finalTable + 1, finalTable)
@@ -141,7 +136,7 @@ function Chain.Merge(...: Types.DictParams): Types.Dictionary<unknown, unknown>
 	-- Fill the table
 	local finalTable = {} :: {[unknown]: unknown}
 	for _, item in ipairs(args) do
-		if TYPEOF(item) ~= "table" then
+		if typeof(item) ~= "table" then
 			error("Parameters must be only tables.")
 		end
 
