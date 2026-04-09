@@ -1,28 +1,27 @@
 --!native
 --!optimize 2
-local _setmetatable = setmetatable
-local _getmetatable = getmetatable
-local _type = type
-local _CREATE_TABLE = table.create
-
 local function RecursiveCopy<T>(tbl: {T}): {T}
-	if _type(tbl) ~= "table" then
+	if typeof(tbl) ~= "table" then -- Only deep copies tables
 		return tbl
 	end
 
-	local n = #tbl
-	local copy = n > 0 and _CREATE_TABLE(n) or {}
+	-- Iterate over the table and deep copy it recursively
+	local tableSize = #tbl
+	local tableCopy: {T} = tableSize > 0 and table.create(tableSize) or {}
+
 	for key, value in pairs(tbl) do
-		local newKey = (_type(key) == "table") and RecursiveCopy(key) or key
-		copy[newKey] = (_type(value) == "table") and RecursiveCopy(value) or value
+		local newKey = (typeof(key) == "table") and RecursiveCopy(key) or key
+		local newValue = (typeof(value) == "table") and RecursiveCopy(value) or value
+		tableCopy[newKey] = newValue
 	end
 
-	local mt = _getmetatable(tbl)
+	-- Copy the original table's metatable (if it exists)
+	local mt = getmetatable(tbl)
 	if mt then
-		_setmetatable(copy, mt)
+		setmetatable(tableCopy, mt)
 	end
 
-	return copy
+	return tableCopy
 end
 
 return RecursiveCopy
