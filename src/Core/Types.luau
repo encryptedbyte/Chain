@@ -72,6 +72,7 @@ export type Dictionary<K, V> = {
 	ForEach: (self: Dictionary<K, V>, query: KeyValueBaseQuery<K, V, any>) -> Dictionary<K, V>,
 	IsEmpty: (self: Dictionary<K, V>) -> boolean,
 	Keys: (self: Dictionary<K, V>) -> Array<K>,
+	Values: (self: Dictionary<K, V>) -> Array<V>,
 	
 	-- Search
 	First: (self: Dictionary<K, V>, query: KeyValueComparison<K, V>) -> (K, V)?,

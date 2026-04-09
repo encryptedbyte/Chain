@@ -261,6 +261,20 @@ function Chain.Keys<K, V>(self: Types.Dictionary<K, V>)
 	return require("./Array").new(result)
 end
 
+function Chain.Values<K, V>(self: Types.Dictionary<K, V>)
+	local collection: {[K]: V} = self:_Execute()
+
+	local result: {V} = {}
+	local index = 1
+
+	for _, value in pairs(collection) do
+		result[index] = value
+		index += 1
+	end
+
+	return require("./Array").new(result)
+end
+
 --[[
 	_OptimizePipeline:
 	- Attempts to reorder or optimize some tasks trying to improve performance before iteration	
