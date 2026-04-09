@@ -71,6 +71,7 @@ export type Dictionary<K, V> = {
 	Flatten: <U>(self: Dictionary<K, V>, query: KeyValueSelection<K, V, {U}>) -> Array<U>,
 	ForEach: (self: Dictionary<K, V>, query: KeyValueBaseQuery<K, V, any>) -> Dictionary<K, V>,
 	IsEmpty: (self: Dictionary<K, V>) -> boolean,
+	Keys: (self: Dictionary<K, V>) -> Array<K>,
 	
 	-- Search
 	First: (self: Dictionary<K, V>, query: KeyValueComparison<K, V>) -> (K, V)?,

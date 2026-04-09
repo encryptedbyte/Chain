@@ -247,6 +247,20 @@ function Chain.GetType<K, V>(self: Types.Dictionary<K, V>)
 	return "Dictionary"
 end
 
+function Chain.Keys<K, V>(self: Types.Dictionary<K, V>)
+	local collection: {[K]: V} = self:_Execute()
+
+	local result: {K} = {}
+	local index = 1
+
+	for key, _ in pairs(collection) do
+		result[index] = key
+		index += 1
+	end
+
+	return require("./Array").new(result)
+end
+
 --[[
 	_OptimizePipeline:
 	- Attempts to reorder or optimize some tasks trying to improve performance before iteration	
